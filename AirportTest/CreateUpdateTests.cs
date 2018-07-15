@@ -1,33 +1,64 @@
-﻿using Business_Layer.Services;
-using Data_Access_Layer.Interfaces;
+﻿using AirportTests.Fakes;
+using AutoMapper;
+using Business_Layer.DTOValidation;
+using Business_Layer.MyMapperConfiguration;
+using Business_Layer.Services;
 using Data_Access_Layer.Models;
-using FakeItEasy;
+using FluentValidation;
 using NUnit.Framework;
-using System;
-using System.Collections.Generic;
-using System.Text;
+using Shared.DTOs;
 
 namespace AirportTests
 {
     [TestFixture]
-    class CreateUpdateTests
+    public class CreateUpdateTests
     {
-        AirportService service;
+        AirportService _service;
+        IMapper _mapper;
         public CreateUpdateTests()
         {
-            var unitOfWork = A.Fake<IUnitOfWork>();
-            service = new AirportService(unitOfWork);
+            _mapper = MyMapperConfiguration.GetConfiguration().CreateMapper();
+            var unitOfWork = new FakeUnitOfWork();
+            _service = new AirportService(unitOfWork);
         }
         [Test]
-        public void Pilot_when_create_pilot_then_get_pilot_correctly()
+        public void ValidationMappingPilot_when_validate_pilot_OK_then_map()
         {
+            var pilotDTOValidator = new PilotDTOValidator();
+            PilotDTO correct = new PilotDTO() 
+            {
+                Id = 1,
+                Surname = "Surname",
+                Experience = 3,
+                Name = "Name"
+            };
+
+            PilotDTO incorrect = new PilotDTO()
+            {
+                Id = 2
+            };
+
+            bool correctRes = pilotDTOValidator.Validate(correct).IsValid;
+
+            Assert.True(correctRes);
+            var mapped = _mapper.Map<PilotDTO, Pilot>(correct);
+
+            if (correctRes)
+            {
+                _service.Post<Pilot>(mapped);
+            }
+
+            bool incorrectRes = pilotDTOValidator.Validate(incorrect).IsValid;
+
+            Assert.False(incorrectRes);
+            var mappedIncorrect = _mapper.Map<PilotDTO, Pilot>(incorrect);
             
+            if(incorrectRes)
+            {
+                _service.Post<Pilot>(mapped);
+            }
         }
 
-        [SetUp]
-        public void Seed()
-        {
-            A.CallTo(() => service.GetAll<Pilot>()).Returns(new Pil)
-        }
+        
     }
 }
