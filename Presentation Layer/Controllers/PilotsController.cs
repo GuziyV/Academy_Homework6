@@ -2,6 +2,7 @@
 using System.Net;
 using System.Net.Http;
 using AutoMapper;
+using Business_Layer.DTOValidation;
 using Business_Layer.Services;
 using Data_Access_Layer.Interfaces;
 using Data_Access_Layer.Models;
@@ -16,6 +17,7 @@ namespace Presentation_Layer.Controllers
     {
         private readonly AirportService _service;
         private readonly IMapper _mapper;
+        PilotDTOValidator validator = new PilotDTOValidator();
 
         public PilotsController(IMapper mapper, AirportService service)
         {
@@ -41,9 +43,9 @@ namespace Presentation_Layer.Controllers
         [HttpPost]
         public HttpResponseMessage Post([FromBody]PilotDTO pilot)
         {
-            if (ModelState.IsValid && pilot != null)
+            if (ModelState.IsValid && pilot != null && validator.Validate(pilot).IsValid)
             {
-                _service.Post<Pilot>(Mapper.Map<PilotDTO, Pilot>(pilot));
+                _service.Post<Pilot>(_mapper.Map<PilotDTO, Pilot>(pilot));
                 _service.SaveChanges();
                 return new HttpResponseMessage(HttpStatusCode.OK);
             }
@@ -57,9 +59,9 @@ namespace Presentation_Layer.Controllers
         [HttpPut("{id}")]
         public HttpResponseMessage Put(int id, [FromBody]PilotDTO pilot)
         {
-            if (ModelState.IsValid && pilot != null)
+            if (ModelState.IsValid && pilot != null && validator.Validate(pilot).IsValid)
             {
-                _service.Update<Pilot>(id, Mapper.Map<PilotDTO, Pilot>(pilot));
+                _service.Update<Pilot>(id, _mapper.Map<PilotDTO, Pilot>(pilot));
                 _service.SaveChanges();
                 return new HttpResponseMessage(HttpStatusCode.OK);
             }

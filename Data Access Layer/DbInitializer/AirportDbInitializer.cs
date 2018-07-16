@@ -10,6 +10,12 @@ namespace Data_Access_Layer.DbInitializer
 {
     static public class AirportDbInitializer
     {
+        static public void Drop(AirportContext context)
+        {
+            context.Database.EnsureDeleted();
+        }
+
+
         static public void Initialize(AirportContext context)
         {
             context.Database.Migrate(); 

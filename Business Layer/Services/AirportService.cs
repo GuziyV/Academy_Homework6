@@ -17,6 +17,17 @@ namespace Business_Layer.Services
 
         }
         #region General
+
+        public void Seed()
+        {
+            _unitOfWork.SeedDB();
+        }
+
+        public void Drop()
+        {
+            _unitOfWork.DropDB();
+        }
+
         public T GetById<T>(int id) where T : class
         {
             return _unitOfWork.GetRepository<T>().Get(id);

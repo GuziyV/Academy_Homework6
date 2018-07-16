@@ -8,6 +8,7 @@ using Data_Access_Layer.Models;
 using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel.DataAnnotations;
 using Shared.DTOs;
+using Business_Layer.DTOValidation;
 
 namespace Presentation_Layer.Controllers
 {
@@ -17,6 +18,7 @@ namespace Presentation_Layer.Controllers
     {
         private readonly AirportService _service;
         private readonly IMapper _mapper;
+        CrewDTOValidator validator = new CrewDTOValidator();
 
         public CrewsController(IMapper mapper, AirportService service)
         {
@@ -28,23 +30,23 @@ namespace Presentation_Layer.Controllers
         [HttpGet]
         public IEnumerable<CrewDTO> Get()
         {
-            return Mapper.Map<IEnumerable<Crew>, IEnumerable<CrewDTO>>(_service.GetAll<Crew>());
+            return _mapper.Map<IEnumerable<Crew>, IEnumerable<CrewDTO>>(_service.GetAll<Crew>());
         }
 
         // GET api/crews/id
         [HttpGet("{id}")]
         public CrewDTO Get(int id)
         {
-            return Mapper.Map<Crew, CrewDTO>(_service.GetById<Crew>(id));
+            return _mapper.Map<Crew, CrewDTO>(_service.GetById<Crew>(id));
         }
 
         // POST api/crews
         [HttpPost]
         public HttpResponseMessage Post([FromBody]CrewDTO crew)
         {
-            if(ModelState.IsValid && crew != null)
+            if(ModelState.IsValid && crew != null && validator.Validate(crew).IsValid)
             {
-                _service.Post<Crew>(Mapper.Map<CrewDTO, Crew>(crew));
+                _service.Post<Crew>(_mapper.Map<CrewDTO, Crew>(crew));
                 _service.SaveChanges();
                 return new HttpResponseMessage(HttpStatusCode.OK);
             }
@@ -58,9 +60,9 @@ namespace Presentation_Layer.Controllers
         [HttpPut("{id}")]
         public HttpResponseMessage Put(int id, [FromBody]CrewDTO crew)
         {
-            if (ModelState.IsValid && crew != null)
+            if (ModelState.IsValid && crew != null && validator.Validate(crew).IsValid)
             {
-                _service.Update<Crew>(id, Mapper.Map<CrewDTO, Crew>(crew));
+                _service.Update<Crew>(id, _mapper.Map<CrewDTO, Crew>(crew));
                 _service.SaveChanges();
                 return new HttpResponseMessage(HttpStatusCode.OK);
             }

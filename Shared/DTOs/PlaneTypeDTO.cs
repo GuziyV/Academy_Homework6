@@ -7,6 +7,7 @@ namespace Shared.DTOs
     {
         public int Id { get; set; }
 
+        [Required, MaxLength(50)]
         public string Model { get; set; }
 
         public int NumberOfSeats { get; set; }

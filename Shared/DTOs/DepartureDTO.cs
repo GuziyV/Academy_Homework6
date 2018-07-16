@@ -8,13 +8,16 @@ namespace Shared.DTOs
     {
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
-
+        [Required]
         public FlightDTO Flight { get; set; }
 
+        [Required]
         public DateTime TimeOfDeparture { get; set; }
 
+        [Required]
         public CrewDTO Crew { get; set; }
 
+        [Required]
         public PlaneDTO Plane { get; set; }
     }
 }

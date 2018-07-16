@@ -9,6 +9,10 @@ namespace AirportTests.Fakes
 {
     class FakeUnitOfWork : IUnitOfWork
     {
+        public void DropDB()
+        {
+            
+        }
 
         public IRepository<T> GetRepository<T>() where T : class
         {
@@ -76,7 +80,12 @@ namespace AirportTests.Fakes
 
         public void SaveChanges()
         {
-            throw new NotImplementedException();
+           
+        }
+
+        public void SeedDB()
+        {
+           
         }
     }
 }

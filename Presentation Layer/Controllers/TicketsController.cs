@@ -2,6 +2,7 @@
 using System.Net;
 using System.Net.Http;
 using AutoMapper;
+using Business_Layer.DTOValidation;
 using Business_Layer.Services;
 using Data_Access_Layer.Interfaces;
 using Data_Access_Layer.Models;
@@ -16,6 +17,7 @@ namespace Presentation_Layer.Controllers
     {
         private readonly AirportService _service;
         private readonly IMapper _mapper;
+        TicketDTOValidator validator = new TicketDTOValidator();
 
         public TicketsController(IMapper mapper, AirportService service)
         {
@@ -41,7 +43,7 @@ namespace Presentation_Layer.Controllers
         [HttpPost]
         public HttpResponseMessage Post([FromBody]TicketDTO ticket)
         {
-            if (ModelState.IsValid && ticket != null)
+            if (ModelState.IsValid && ticket != null && validator.Validate(ticket).IsValid)
             {
                 _service.Post<Ticket>(Mapper.Map<TicketDTO, Ticket>(ticket));
                 _service.SaveChanges();
@@ -57,7 +59,7 @@ namespace Presentation_Layer.Controllers
         [HttpPut("{id}")]
         public HttpResponseMessage Put(int id, [FromBody]TicketDTO ticket)
         {
-            if (ModelState.IsValid && ticket != null)
+            if (ModelState.IsValid && ticket != null && validator.Validate(ticket).IsValid)
             {
                 _service.Update<Ticket>(id, Mapper.Map<TicketDTO, Ticket>(ticket));
                 _service.SaveChanges();

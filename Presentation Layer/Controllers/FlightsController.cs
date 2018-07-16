@@ -2,6 +2,7 @@
 using System.Net;
 using System.Net.Http;
 using AutoMapper;
+using Business_Layer.DTOValidation;
 using Business_Layer.Services;
 using Data_Access_Layer.Interfaces;
 using Data_Access_Layer.Models;
@@ -16,6 +17,7 @@ namespace Presentation_Layer.Controllers
     { 
         private readonly AirportService _service;
         private readonly IMapper _mapper;
+        FlightDTOValidator validator = new FlightDTOValidator();
 
         public FlightsController(IMapper mapper, AirportService service)
         {
@@ -27,14 +29,14 @@ namespace Presentation_Layer.Controllers
         [HttpGet]
         public IEnumerable<FlightDTO> Get()
         {
-            return Mapper.Map<IEnumerable<Flight>, IEnumerable<FlightDTO>>(_service.GetAll<Flight>());
+            return _mapper.Map<IEnumerable<Flight>, IEnumerable<FlightDTO>>(_service.GetAll<Flight>());
         }
 
         // GET api/flights/id
         [HttpGet("{number}")]
         public FlightDTO Get(int number)
         {
-            return Mapper.Map<Flight, FlightDTO>(_service.GetById<Flight>(number));
+            return _mapper.Map<Flight, FlightDTO>(_service.GetById<Flight>(number));
         }
 
         //GET /api/flights/routes?departureFrom=:departureFrom&destination=:destination
@@ -42,16 +44,16 @@ namespace Presentation_Layer.Controllers
         [HttpGet]
         public IEnumerable<FlightDTO> GetByRoute(string departureFrom, string destination)
         {
-            return Mapper.Map<IEnumerable<Flight>, IEnumerable<FlightDTO>>(_service.GetFlightByRoute(departureFrom, destination));
+            return _mapper.Map<IEnumerable<Flight>, IEnumerable<FlightDTO>>(_service.GetFlightByRoute(departureFrom, destination));
         }
 
         // POST api/flights
         [HttpPost]
         public HttpResponseMessage Post([FromBody]FlightDTO flight)
         {
-            if (ModelState.IsValid && flight != null)
+            if (ModelState.IsValid && validator.Validate(flight).IsValid && flight != null)
             {
-                _service.Post<Flight>(Mapper.Map<FlightDTO, Flight>(flight));
+                _service.Post<Flight>(_mapper.Map<FlightDTO, Flight>(flight));
                 _service.SaveChanges();
                 return new HttpResponseMessage(HttpStatusCode.OK);
             }
@@ -67,7 +69,7 @@ namespace Presentation_Layer.Controllers
         {
             if (ModelState.IsValid && flight != null)
             {
-                _service.Update<Flight>(number, Mapper.Map<FlightDTO, Flight>(flight));
+                _service.Update<Flight>(number, _mapper.Map<FlightDTO, Flight>(flight));
                 _service.SaveChanges();
                 return new HttpResponseMessage(HttpStatusCode.OK);
             }

@@ -1,4 +1,5 @@
 ﻿using Data_Access_Layer.Contexts;
+using Data_Access_Layer.DbInitializer;
 using Data_Access_Layer.Interfaces;
 using Data_Access_Layer.Models;
 using Data_Access_Layer.Repositories;
@@ -58,6 +59,16 @@ namespace Data_Access_Layer
             {
                 throw new TypeAccessException("Wrong type of repo");
             }
+        }
+
+        public void SeedDB()
+        {
+            AirportDbInitializer.Initialize(_airportContext);
+        }
+
+        public void DropDB()
+        {
+            AirportDbInitializer.Drop(_airportContext);
         }
 
         private FlightRepository flightRepository;

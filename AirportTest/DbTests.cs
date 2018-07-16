@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Ninject;
 using AirportTests.Modules;
+using Data_Access_Layer.DbInitializer;
 
 namespace AirportTests
 {
@@ -19,6 +20,7 @@ namespace AirportTests
             var kernel = new StandardKernel(new AirPortServiceModule());
 
             _airportService = kernel.Get<AirportService>();
+            _airportService.Seed();
         }
 
         [Test]
@@ -93,6 +95,7 @@ namespace AirportTests
             Assert.AreEqual(flight.ArrivalTime, newFlight.ArrivalTime);
             Assert.AreEqual(flight.DepartureFrom, newFlight.DepartureFrom);
             Assert.AreEqual(flight.Destination, newFlight.Destination);
+            _airportService.SaveChanges();
         }
 
         [Test]
