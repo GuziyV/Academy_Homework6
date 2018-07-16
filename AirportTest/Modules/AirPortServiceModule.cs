@@ -1,6 +1,7 @@
 ﻿using Business_Layer.Services;
 using Data_Access_Layer;
 using Data_Access_Layer.Contexts;
+using Data_Access_Layer.DbInitializer;
 using Data_Access_Layer.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -21,8 +22,10 @@ namespace AirportTests.Modules
             string conStr = @"Server=.\SQLEXPRESS;Database=AirportDB;Trusted_Connection=True;";
             var opt = new DbContextOptionsBuilder<AirportContext>()
                 .UseSqlServer(conStr, b => b.MigrationsAssembly("Presentation Layer")).Options;
+    
             var context = new AirportContext(opt);
-            context.Database.EnsureCreated();
+
+            AirportDbInitializer.Initialize(context);
 
             Bind<AirportContext>().ToSelf().WithConstructorArgument("options", opt);
 
