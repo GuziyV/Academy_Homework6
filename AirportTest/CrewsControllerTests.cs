@@ -1,7 +1,6 @@
-﻿using AirportTests.Modules;
+﻿using AirportTests.Fakes;
 using Business_Layer.MyMapperConfiguration;
 using Business_Layer.Services;
-using Ninject;
 using NUnit.Framework;
 using Presentation_Layer.Controllers;
 using Shared.DTOs;
@@ -9,7 +8,6 @@ using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
-using System.Text;
 
 namespace AirportTests
 {
@@ -19,9 +17,9 @@ namespace AirportTests
         CrewsController _controller;
         public CrewsControllerTests()
         {
-            var kernel = new StandardKernel(new AirPortServiceModule());
             var mapper = MyMapperConfiguration.GetConfiguration().CreateMapper();
-            _controller = new CrewsController(mapper, kernel.Get<AirportService>());
+            AirportService service = new AirportService(new FakeUnitOfWork());
+            _controller = new CrewsController(mapper, service);
         }
 
         [Test]

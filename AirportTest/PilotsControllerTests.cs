@@ -10,6 +10,7 @@ using Shared.DTOs;
 using System;
 using System.Net;
 using System.Net.Http;
+using AirportTests.Fakes;
 
 namespace AirportTests
 {
@@ -19,9 +20,9 @@ namespace AirportTests
         PilotsController _controller;
         public PilotsControllerTests()
         {
-            var kernel = new StandardKernel(new AirPortServiceModule());
             var mapper = MyMapperConfiguration.GetConfiguration().CreateMapper();
-            _controller = new PilotsController(mapper, kernel.Get<AirportService>());
+            AirportService service = new AirportService(new FakeUnitOfWork());
+            _controller = new PilotsController(mapper, service);
         }
 
         [Test]

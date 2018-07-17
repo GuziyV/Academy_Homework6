@@ -23,6 +23,7 @@ namespace AirportTests
             var unitOfWork = new FakeUnitOfWork();
             _service = new AirportService(unitOfWork);
         }
+
         [Test]
         public void ValidationMappingPilot_when_validate_pilot_OK_then_map()
         {
