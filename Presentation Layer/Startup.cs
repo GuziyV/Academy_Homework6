@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Business_Layer.MyMapperConfiguration;
 using Business_Layer.Services;
 using Data_Access_Layer;
 using Data_Access_Layer.Contexts;
@@ -52,16 +53,7 @@ namespace Presentation_Layer
 
         public MapperConfiguration MapperConfiguration()
         {
-            var config = new MapperConfiguration(cfg =>
-            {
-                cfg.CreateMap<Flight, FlightDTO>();
-                cfg.CreateMap<Departure, DepartureDTO>();
-                cfg.CreateMap<Pilot, PilotDTO>();
-                cfg.CreateMap<Plane, PlaneDTO>();
-                cfg.CreateMap<PlaneType, PlaneTypeDTO>();
-                cfg.CreateMap<Stewardess, StewardessDTO>();
-                cfg.CreateMap<Ticket, TicketDTO>();
-            });
+            var config = MyMapperConfiguration.GetConfiguration();
             return config;
         }
     }

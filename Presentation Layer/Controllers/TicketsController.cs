@@ -2,6 +2,7 @@
 using System.Net;
 using System.Net.Http;
 using AutoMapper;
+using Business_Layer.DTOValidation;
 using Business_Layer.Services;
 using Data_Access_Layer.Interfaces;
 using Data_Access_Layer.Models;
@@ -16,6 +17,7 @@ namespace Presentation_Layer.Controllers
     {
         private readonly AirportService _service;
         private readonly IMapper _mapper;
+        TicketDTOValidator validator = new TicketDTOValidator();
 
         public TicketsController(IMapper mapper, AirportService service)
         {
@@ -27,23 +29,23 @@ namespace Presentation_Layer.Controllers
         [HttpGet]
         public IEnumerable<TicketDTO> Get()
         {
-            return Mapper.Map<IEnumerable<Ticket>, IEnumerable<TicketDTO>>(_service.GetAll<Ticket>());
+            return _mapper.Map<IEnumerable<Ticket>, IEnumerable<TicketDTO>>(_service.GetAll<Ticket>());
         }
 
         // GET api/tickets/id
         [HttpGet("{id}")]
         public TicketDTO Get(int id)
         {
-            return Mapper.Map<Ticket, TicketDTO>(_service.GetById<Ticket>(id));
+            return _mapper.Map<Ticket, TicketDTO>(_service.GetById<Ticket>(id));
         }
 
         // POST api/tickets
         [HttpPost]
         public HttpResponseMessage Post([FromBody]TicketDTO ticket)
         {
-            if (ModelState.IsValid && ticket != null)
+            if (ModelState.IsValid && ticket != null && validator.Validate(ticket).IsValid)
             {
-                _service.Post<Ticket>(Mapper.Map<TicketDTO, Ticket>(ticket));
+                _service.Post<Ticket>(_mapper.Map<TicketDTO, Ticket>(ticket));
                 _service.SaveChanges();
                 return new HttpResponseMessage(HttpStatusCode.OK);
             }
@@ -57,9 +59,9 @@ namespace Presentation_Layer.Controllers
         [HttpPut("{id}")]
         public HttpResponseMessage Put(int id, [FromBody]TicketDTO ticket)
         {
-            if (ModelState.IsValid && ticket != null)
+            if (ModelState.IsValid && ticket != null && validator.Validate(ticket).IsValid)
             {
-                _service.Update<Ticket>(id, Mapper.Map<TicketDTO, Ticket>(ticket));
+                _service.Update<Ticket>(id, _mapper.Map<TicketDTO, Ticket>(ticket));
                 _service.SaveChanges();
                 return new HttpResponseMessage(HttpStatusCode.OK);
             }

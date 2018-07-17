@@ -2,6 +2,7 @@
 using System.Net;
 using System.Net.Http;
 using AutoMapper;
+using Business_Layer.DTOValidation;
 using Business_Layer.Services;
 using Data_Access_Layer.Interfaces;
 using Data_Access_Layer.Models;
@@ -17,6 +18,7 @@ namespace Presentation_Layer.Controllers
     {
         private readonly AirportService _service;
         private readonly IMapper _mapper;
+        PlaneDTOValidator validator = new PlaneDTOValidator();
 
         public PlanesController(IMapper mapper, AirportService service)
         {
@@ -28,14 +30,14 @@ namespace Presentation_Layer.Controllers
         [HttpGet]
         public IEnumerable<PlaneDTO> Get()
         {
-            return Mapper.Map<IEnumerable<Plane>, IEnumerable<PlaneDTO>>(_service.GetAll<Plane>());
+            return _mapper.Map<IEnumerable<Plane>, IEnumerable<PlaneDTO>>(_service.GetAll<Plane>());
         }
 
         // GET api/planes/id
         [HttpGet("{id}")]
         public PlaneDTO Get(int id)
         {
-            return Mapper.Map<Plane, PlaneDTO>(_service.GetById<Plane>(id));
+            return _mapper.Map<Plane, PlaneDTO>(_service.GetById<Plane>(id));
         }
 
 
@@ -43,9 +45,9 @@ namespace Presentation_Layer.Controllers
         [HttpPost]
         public HttpResponseMessage Post([FromBody]PlaneDTO plane)
         {
-            if (ModelState.IsValid && plane != null)
+            if (ModelState.IsValid && plane != null && validator.Validate(plane).IsValid)
             {
-                _service.Post<Plane>(Mapper.Map<PlaneDTO, Plane>(plane));
+                _service.Post<Plane>(_mapper.Map<PlaneDTO, Plane>(plane));
                 _service.SaveChanges();
                 return new HttpResponseMessage(HttpStatusCode.OK);
             }
@@ -59,9 +61,9 @@ namespace Presentation_Layer.Controllers
         [HttpPut("{id}")]
         public HttpResponseMessage Put(int id, [FromBody]PlaneDTO plane)
         {
-            if (ModelState.IsValid && plane != null)
+            if (ModelState.IsValid && plane != null && validator.Validate(plane).IsValid)
             {
-                _service.Update<Plane>(id, Mapper.Map<PlaneDTO, Plane>(plane));
+                _service.Update<Plane>(id, _mapper.Map<PlaneDTO, Plane>(plane));
                 _service.SaveChanges();
                 return new HttpResponseMessage(HttpStatusCode.OK);
             }

@@ -10,5 +10,7 @@ namespace Data_Access_Layer.Interfaces
     {
         IRepository<T> GetRepository<T>() where T : class;
         void SaveChanges();
+        void SeedDB();
+        void DropDB();
     }
 }

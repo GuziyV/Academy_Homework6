@@ -8,10 +8,13 @@ namespace Shared.DTOs
     {
         public int Id { get; set; }
 
+        [Required]
         public PlaneTypeDTO PlaneType { get; set; }
 
+        [Required]
         public DateTime ReleaseDate { get; set; }
 
+        [Required]
         public TimeSpan LifeTime
         {
             get

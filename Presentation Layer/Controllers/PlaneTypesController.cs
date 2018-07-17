@@ -2,6 +2,7 @@
 using System.Net;
 using System.Net.Http;
 using AutoMapper;
+using Business_Layer.DTOValidation;
 using Business_Layer.Services;
 using Data_Access_Layer.Interfaces;
 using Data_Access_Layer.Models;
@@ -16,6 +17,7 @@ namespace Presentation_Layer.Controllers
     {
         private readonly AirportService _service;
         private readonly IMapper _mapper;
+        PlaneTypeDTOValidator validator = new PlaneTypeDTOValidator();
 
         public PlaneTypesController(IMapper mapper, AirportService service)
         {
@@ -41,7 +43,7 @@ namespace Presentation_Layer.Controllers
         [HttpPost]
         public HttpResponseMessage Post([FromBody]PlaneTypeDTO planeType)
         {
-            if (ModelState.IsValid && planeType != null)
+            if (ModelState.IsValid && planeType != null && validator.Validate(planeType).IsValid)
             {
                 _service.Post<PlaneType>(Mapper.Map<PlaneTypeDTO, PlaneType>(planeType));
                 _service.SaveChanges();
@@ -57,7 +59,7 @@ namespace Presentation_Layer.Controllers
         [HttpPut("{id}")]
         public HttpResponseMessage Put(int id, [FromBody]PlaneTypeDTO planeType)
         {
-            if (ModelState.IsValid && planeType != null)
+            if (ModelState.IsValid && planeType != null && validator.Validate(planeType).IsValid)
             {
                 _service.Update<PlaneType>(id, Mapper.Map<PlaneTypeDTO, PlaneType>(planeType));
                 _service.SaveChanges();
